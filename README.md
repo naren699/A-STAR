@@ -117,3 +117,87 @@ G 0 <br>
 <h2>Sample Output</h2>
 <hr>
 Path found: ['A', 'E', 'D', 'G']
+
+## PROGRAM :
+```py
+import heapq
+
+def astar(graph, heuristics, start, goal):
+
+    open_list = []
+    heapq.heappush(open_list, (0, start))
+
+    came_from = {}
+    g_cost = {node: float('inf') for node in graph}
+    g_cost[start] = 0
+
+    while open_list:
+
+        _, current = heapq.heappop(open_list)
+
+        if current == goal:
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            return path
+
+        for neighbor, cost in graph[current]:
+
+            tentative_g = g_cost[current] + cost
+
+            if tentative_g < g_cost[neighbor]:
+                came_from[neighbor] = current
+                g_cost[neighbor] = tentative_g
+
+                f_cost = tentative_g + heuristics[neighbor]
+                heapq.heappush(open_list, (f_cost, neighbor))
+
+    return None
+
+
+# -------- INPUT SECTION --------
+
+n, e = map(int, input().split())
+
+graph = {}
+
+for _ in range(e):
+    u, v, cost = input().split()
+    cost = int(cost)
+
+    if u not in graph:
+        graph[u] = []
+    if v not in graph:
+        graph[v] = []
+
+    graph[u].append((v, cost))
+    graph[v].append((u, cost))   # Undirected graph
+
+
+# Heuristic values
+heuristics = {}
+
+for _ in range(n):
+    node, h = input().split()
+    heuristics[node] = int(h)
+
+
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+
+# -------- OUTPUT --------
+
+path = astar(graph, heuristics, start, goal)
+
+if path:
+    print("Path found:", path)
+else:
+    print("No path found")
+```
+
+## OUTPUT:
+
+![alt text](image.png)
